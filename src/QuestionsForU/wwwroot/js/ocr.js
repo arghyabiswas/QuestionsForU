@@ -35,19 +35,7 @@ function OCR(rawData) {
             rawData.data[i + 1] = pixel;
             rawData.data[i + 2] = pixel;
             //rawData.data[i+3] = pixel;
-
-
-            /*
-             var c = i % _width;
-             if(c == 0){
-                 _hProjection.push(0);
-             }
-             else{
-                 if(pixel == BYTE_BLACK){
-                     _hProjection[_hProjection.length]++;
-                 }
-             }
-             */
+            
         }
         _data = rawData;
 
