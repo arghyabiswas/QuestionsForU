@@ -1,25 +1,31 @@
 ﻿@{
     ViewData["Title"] = "OCR";
 }
-<div ng-app="ocr" ng-controller="OCRController as ctl">
+<div ng-app="ocr" ng-controller="OCRController as ctl" class="row">
+    <div class="col-lg-2">
         <p>Image to use:</p>
-        <img id="sourceImage" src="images/en.jpg" alt="The Scream" width="20" height="28">
-
+        <img id="sourceImage" src="images/bn.jpg" alt="The Scream" width="20" height="28">
+    </div>
+    <div class="col-lg-8">
         <p>Canvas to fill:</p>
          <p>
-             <button ng-click="ctl.LoadCanvas()">Try it</button>
+             <button ng-click="ctl.LoadCanvas()">Load</button>
              <button ng-click="ctl.LoadQuiue(-1)">Previous</button>
              <button ng-click="ctl.LoadQuiue(1)">Next</button>
          </p>
          <div>
-             <div style="overflow:auto;width:600px;height:85px;">
+             <div style="overflow:auto;min-height:50px;">
                 <canvas id="ocrQueue" width="600" height="32" style="border:1px solid #d3d3d3;">
                 Your browser does not support the HTML5 canvas tag.
                 </canvas>
             </div>
             <br />
-            <canvas id="ocrCanvas" width="600" height="400" style="border:1px solid #d3d3d3;">
+            <div style="overflow:auto;min-height:420px;">
+            <canvas id="ocrCanvas" width="800" height="600" style="border:1px solid #d3d3d3;">
                 Your browser does not support the HTML5 canvas tag.
             </canvas>
+            </div>
         </div>
+    </div>
+    <div class="col-lg-2"></div>
     </div>

@@ -60,6 +60,9 @@ function OCR(rawData) {
                 _val = _val << 1;
                 if (v == 1) {
                     _hsum++;
+
+                }
+                if (_bitData[c * _width + r] == 1) {
                     _val++;
                 }
             }
@@ -82,7 +85,7 @@ function OCR(rawData) {
             _hProjection.push(_vsum);
 
         }
-        console.log(_intData);
+        
     }
 
     Init(rawData);

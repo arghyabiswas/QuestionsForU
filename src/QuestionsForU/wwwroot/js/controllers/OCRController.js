@@ -113,7 +113,7 @@ function OCRController($scope) {
 
         var h = lines[lineno - 1].End - lines[lineno - 1].Start;
         var r = qcanvas.height / h;
-        qcanvas.width = canvas.width * r / scale; // or 1/r
+        qcanvas.width = canvas.width * r; // / scale; // or 1/r
         qcontext.scale(r * scale, r * scale);
         var e = 2 * (canvas.width / canvas.height) * r * (lineno / lines.length);
         var l = -1 * lines[lineno - 1].Start / scale; // - lineno //- Math.round(e)
@@ -123,7 +123,7 @@ function OCRController($scope) {
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
         var qocr = new OCR(qdata);
         qcontext.putImageData(qocr.data, 0, 0);
-       // console.log(qocr.ints);
+        console.log(qocr.ints);
 
 
         /*
