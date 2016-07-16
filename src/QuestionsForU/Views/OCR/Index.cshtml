@@ -3,25 +3,29 @@
 }
 <div ng-app="ocr" ng-controller="OCRController as ctl" class="row">
     <div class="col-lg-2">
-        <p>Image to use:</p>
-        <img id="sourceImage" src="images/bn.jpg" alt="The Scream" width="20" height="28">
+        <p style="padding-left:5px;">Image to process:</p>
+        <div title="Englidh" style="padding:5px;margin:5px;cursor:pointer;border:1px solid #CCC;" ng-click="ctl.LoadCanvas('img_1')">
+            <img id="img_1" src="images/en.jpg" class="img-responsive"/>
+        </div>
+        <div title="Bengali" style="padding:5px;margin:5px;cursor:pointer;border:1px solid #CCC;" ng-click="ctl.LoadCanvas('img_2')">
+            <img id="img_2" src="images/bn.jpg" class="img-responsive"/>
+        </div>
     </div>
     <div class="col-lg-8">
-        <p>Canvas to fill:</p>
-         <p>
-             <button ng-click="ctl.LoadCanvas()">Load</button>
-             <button ng-click="ctl.LoadQuiue(-1)">Previous</button>
-             <button ng-click="ctl.LoadQuiue(1)">Next</button>
-         </p>
+         <p>Image Canvas:</p>
          <div>
-             <div style="overflow:auto;min-height:50px;">
-                <canvas id="ocrQueue" width="600" height="32" style="border:1px solid #d3d3d3;">
+             <div style="overflow:auto;min-height:50px;max-width:600px;">
+                <canvas id="ocrQueue" width="600" height="32">
                 Your browser does not support the HTML5 canvas tag.
                 </canvas>
+               
             </div>
-            <br />
-            <div style="overflow:auto;min-height:420px;">
-            <canvas id="ocrCanvas" width="800" height="600" style="border:1px solid #d3d3d3;">
+            <div>
+                <button ng-click="ctl.LoadQuiue(-1)"> << </button>
+                <button ng-click="ctl.LoadQuiue(1)"> >> </button>
+            </div>
+            <div style="overflow:auto">
+            <canvas id="ocrCanvas" width="600" height="424">
                 Your browser does not support the HTML5 canvas tag.
             </canvas>
             </div>

@@ -4,7 +4,6 @@ function OCRController($scope) {
         context = null,
         qcanvas = null,
         qcontext = null,
-        img = null,
         ocr = null,
         data = null,
         vscale = 1,
@@ -14,9 +13,11 @@ function OCRController($scope) {
         lineno = 0,
         qscale = 1,
         lavdscape = false,
-        maxheight = 1;
+        maxheight = 1,
+        selectedImage;
 
-    self.LoadCanvas = function() {
+    self.LoadCanvas = function(img) {
+        selectedImage = $('#' + img)[0];
         canvas = $("#ocrCanvas")[0];
         context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -24,12 +25,12 @@ function OCRController($scope) {
         qcanvas = $("#ocrQueue")[0];
         qcontext = qcanvas.getContext("2d");
 
-        img = $("#sourceImage")[0];
+        //img = $("#sourceImage")[0];
 
         //img.crossOrigin = "Anonymous";
-        scaleImage();
+        ScaleImage();
 
-        context.drawImage(img, 0, 0);
+        context.drawImage(selectedImage, 0, 0);
 
         context.save();
 
@@ -48,7 +49,7 @@ function OCRController($scope) {
         var r = qcanvas.height / maxheight;
         qcanvas.width = canvas.width * r / scale; // or 1/r
         //qcontext.scale(r, r);
-        //qcontext.drawImage(img, 0, -14);
+        //qcontext.drawImage(selectedImage, 0, -14);
         self.LoadQuiue(1);
         //console.log(ocr.height);
         //console.log(ocr.width);
@@ -84,13 +85,20 @@ function OCRController($scope) {
        */
     }
 
-    scaleImage = function() {
+    ScaleImage = function() {
         context.setTransform(1, 0, 0, 1, 0, 0); // RESET 
-        vscale = canvas.height / img.naturalHeight;
-        hscale = canvas.width / img.naturalWidth;
+        vscale = canvas.height / selectedImage.naturalHeight;
+        hscale = canvas.width / selectedImage.naturalWidth;
+
+        //canvas.width = selectedImage.naturalWidth;
+        //canvas.height = selectedImage.naturalHeight;
 
         lavdscape = (canvas.height < canvas.width);
-        scale = (vscale < hscale) ? vscale : hscale;
+        if (vscale < hscale) {
+            scale = vscale;
+        } else {
+            scale = hscale;
+        }
 
         context.scale(scale, scale);
     }
@@ -117,7 +125,7 @@ function OCRController($scope) {
         qcontext.scale(r * scale, r * scale);
         var e = 2 * (canvas.width / canvas.height) * r * (lineno / lines.length);
         var l = -1 * lines[lineno - 1].Start / scale; // - lineno //- Math.round(e)
-        qcontext.drawImage(img, 0, l);
+        qcontext.drawImage(selectedImage, 0, l);
 
         qcontext.save();
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
@@ -136,7 +144,7 @@ function OCRController($scope) {
         qcanvas.width = (canvas.width * s)/Scale;
         qcontext.scale(s,s); 
         qscale = s;
-        qcontext.drawImage(img,0,-1*(lines[lineno-1].Start)/Scale + 2);
+        qcontext.drawImage(selectedImage,0,-1*(lines[lineno-1].Start)/Scale + 2);
         //qcontext.putImageData(ocr.data, 0,-1*(lines[lineno-1].Start)/Scale + 2);
         
         var qrawData=qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
