@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "OCR";
+}
+<div ng-app="ocr" ng-controller="OCRController as ctl">
+        <p>Image to use:</p>
+        <img id="sourceImage" src="images/en.jpg" alt="The Scream" width="20" height="28">
+
+        <p>Canvas to fill:</p>
+         <p>
+             <button ng-click="ctl.LoadCanvas()">Try it</button>
+             <button ng-click="ctl.LoadQuiue(-1)">Previous</button>
+             <button ng-click="ctl.LoadQuiue(1)">Next</button>
+         </p>
+         <div>
+             <div style="overflow:auto;width:600px;height:85px;">
+                <canvas id="ocrQueue" width="600" height="64" style="border:1px solid #d3d3d3;">
+                Your browser does not support the HTML5 canvas tag.
+                </canvas>
+            </div>
+            <br />
+            <canvas id="ocrCanvas" width="600" height="400" style="border:1px solid #d3d3d3;">
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+        </div>
+    </div>
