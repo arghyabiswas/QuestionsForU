@@ -35,7 +35,7 @@ function OCR(rawData) {
             rawData.data[i + 1] = pixel;
             rawData.data[i + 2] = pixel;
             //rawData.data[i+3] = pixel;
-            
+
         }
         _data = rawData;
 
@@ -73,7 +73,7 @@ function OCR(rawData) {
             _hProjection.push(_vsum);
 
         }
-        
+
     }
 
     Init(rawData);
