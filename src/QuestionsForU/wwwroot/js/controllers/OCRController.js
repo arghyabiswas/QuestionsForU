@@ -131,8 +131,8 @@ function OCRController($scope) {
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
         var qocr = new OCR(qdata);
         qcontext.putImageData(qocr.data, 0, 0);
-        console.log(qocr.ints);
-
+        //console.log(qocr.ints); 
+        // TODO
 
         /*
         lineno = lineno+i;
