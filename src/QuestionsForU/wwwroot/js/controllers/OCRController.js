@@ -30,7 +30,7 @@ function OCRController($scope) {
 
         var data = context.getImageData(0, 0, canvas.width, canvas.height);
 
-        var ocr = new OCR(data);
+        var ocr = new OCRCanvas(data);
         context.putImageData(ocr.data, 0, 0);
         lines = ocr.HLines();
 
@@ -91,7 +91,7 @@ function OCRController($scope) {
 
         qcontext.save();
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
-        var qocr = new OCR(qdata);
+        var qocr = new OCRCanvas(qdata);
         qcontext.putImageData(qocr.data, 0, 0);
         //console.log(qocr.ints); 
         // TODO
