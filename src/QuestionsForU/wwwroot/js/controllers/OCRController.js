@@ -85,7 +85,7 @@ function OCRController($scope) {
         var r = qcanvas.height / h;
         qcanvas.width = canvas.width * r;
         qcontext.scale(r * scale, r * scale);
-        
+
         var l = -1 * lines[lineno - 1].Start / scale;
         qcontext.drawImage(selectedImage, 0, l);
 
@@ -94,7 +94,8 @@ function OCRController($scope) {
         var qocr = new OCRCanvas(qdata);
         qcontext.putImageData(qocr.data, 0, 0);
         //console.log(qocr.ints); 
-        // TODO
+
+        var ocr = new OCR(qocr.ints);
 
     }
 }
