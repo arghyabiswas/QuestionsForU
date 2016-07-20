@@ -1,4 +1,4 @@
-var app = angular.module('ocr',[]);
+var app = angular.module('ocr', []);
 /*
 (function(){
    app.config(['$routeProvider','$locationProvider',function($routeProvider,$locationProvider){
@@ -8,5 +8,10 @@ var app = angular.module('ocr',[]);
    }]); 
 }());
 */
-app.controller('OCRController',OCRController);
-OCRController.$inject = ['$scope'];
+
+
+app.factory('OCRServices', OCRServices);
+OCRServices.$inject = ['$http'];
+
+app.controller('OCRController', OCRController);
+OCRController.$inject = ['$scope', 'OCRServices'];
