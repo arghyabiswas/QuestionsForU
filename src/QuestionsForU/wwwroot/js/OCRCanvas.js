@@ -158,11 +158,12 @@ function OCRCanvas(rawData) {
             console.log(distences[i]);
         }
         */
-        CorrectDistence(d);
+        //CorrectDistence(d);
         DistencePlot(d);
     }
 
     function DistenceMap(i) {
+        var m = Math.pow(2, 31) - 1;
         var d = new Array();
         var rd = distences[i];
         var vsum = 0;
@@ -183,6 +184,40 @@ function OCRCanvas(rawData) {
         if (vsum > 0) {
             DistenceMap(i);
         }
+
+        // d's Complement
+        for (c = 1; c < d.length; c++) {
+            d[c] = m - d[c];
+            d[c] = (d[c] & rd[c]);
+            //d[c] = d[c] | distences[distences.length - 1][c];
+        }
+
+        for (c = 1; c < d.length; c++) {
+            var v1 = d[c - 1];
+            var v2 = d[c];
+            var v3 = d[c + 1];
+
+
+
+
+            //d[c] = ((m - v1) & v2 & (m - v3)) //| distences[distences.length - 1][c];
+            //d[c] = m-v2 //| distences[distences.length - 1][c];
+
+
+            //d[c] = m - ((m - (v1 >> 1)) & v2) & (d[c]);
+            //d[c] = ((m - (v1 << 1)) & v2) & (m - d[c]);
+            //d[c] = ((m - (v3 >> 1)) & v2) & (m - d[c]);
+            //d[c] = ((m - (v3 << 1)) & v2) & (m - d[c]);
+            //d[c] = !v2 & distences[distences.length - 1][c];
+            //v2 = !((v1 << 1) | v2);
+            //d[c] = !v2 & distences[distences.length - 1][c];
+            v2 = ((v3 << 1) | v2);
+            //d[c] = v2 || distences[distences.length - 1][c];
+            v2 = ((v3 << 1) | v2);
+            //d[c] = v2// | distences[distences.length - 1][c];
+
+        }
+
     }
 
     function DistencePlot(d) {
@@ -209,9 +244,9 @@ function OCRCanvas(rawData) {
 
     }
 
-    function CorrectDistence(d){
+    function CorrectDistence(d) {
         var dtop = distences[d];
-        var dbottom = distences[d-1];
+        var dbottom = distences[d - 1];
 
         for (c = 1; c < _width - 1; c++) {
             var pos = c * _height;
