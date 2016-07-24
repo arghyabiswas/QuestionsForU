@@ -9,6 +9,7 @@ function OCRCanvas(rawData) {
         _intData = null,
         _hProjection = null,
         _vProjection = null,
+        distences = null,
         BYTE_WHITE = 255,
         BYTE_BLACK = 0;
 
@@ -19,6 +20,7 @@ function OCRCanvas(rawData) {
         _hProjection = new Array();
         _vProjection = new Array();
         _intData = new Array();
+
 
         for (i = 0, n = rawData.data.length; i < n; i = i + 4) {
             var pixel = parseInt((rawData.data[i] + rawData.data[i + 1] + rawData.data[i + 2]) / 3);
@@ -144,8 +146,10 @@ function OCRCanvas(rawData) {
         return lines;
     }
 
-    var distences = new Array();
-    OCRCanvas.prototype.Narrow = function() {
+
+
+    OCRCanvas.prototype.Narrow = function(d) {
+        distences = new Array();
         distences.push(_intData);
         DistenceMap(0);
         /*
@@ -154,8 +158,8 @@ function OCRCanvas(rawData) {
             console.log(distences[i]);
         }
         */
-
-        DistencePlot(distences.length);
+        CorrectDistence(d);
+        DistencePlot(d);
     }
 
     function DistenceMap(i) {
@@ -181,7 +185,42 @@ function OCRCanvas(rawData) {
         }
     }
 
-    function DistencePlot(i) {
-        i = i - 1;
+    function DistencePlot(d) {
+        _intData = distences[d - 1];
+        OCRCanvas.prototype.ints = _intData;
+        for (i = 0, n = _data.data.length; i < n; i = i + 4) {
+            var pos = parseInt(i % (_width * 4)) / 4;
+            var h = parseInt(i / (_width * 4));
+            var pixel = BYTE_WHITE;
+            var v = _intData[pos];
+            var b = Math.pow(2, (_height - h));
+            if ((v & b) == 0) {
+                pixel = BYTE_WHITE;
+            } else {
+                pixel = BYTE_BLACK;
+            }
+
+            _data.data[i] = pixel;
+            _data.data[i + 1] = pixel;
+            _data.data[i + 2] = pixel;
+            //_data.data[i+3] = pixel;
+
+        }
+
+    }
+
+    function CorrectDistence(d){
+        var dtop = distences[d];
+        var dbottom = distences[d-1];
+
+        for (c = 1; c < _width - 1; c++) {
+            var pos = c * _height;
+            var v2 = rd[c - 1] & rd[c] & rd[c + 1];
+            var v1 = v2 >> 1;
+            var v3 = v2 << 1;
+            var v = v2 & v1 & v3;
+            d.push(v);
+            vsum = vsum | v;
+        }
     }
 }

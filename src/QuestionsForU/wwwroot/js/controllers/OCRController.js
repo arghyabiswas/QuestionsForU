@@ -76,7 +76,8 @@ function OCRController($scope, service) {
             lineno = lines.length + 1;
         }
 
-        if (i > 0 && lineno >= lines.length) {vice
+        if (i > 0 && lineno >= lines.length) {
+            vice
             lineno = 0;
         }
 
@@ -95,7 +96,8 @@ function OCRController($scope, service) {
         qcontext.save();
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
         var qocr = new OCRCanvas(qdata);
-        qocr.Narrow();
+        qocr.Narrow(2);
+        //qcontext.setTransform(1, 0, 0, 1, 0, 0); // RESET 
         qcontext.putImageData(qocr.data, 0, 0);
         //console.log(qocr.ints); 
 
@@ -114,7 +116,7 @@ function OCRController($scope, service) {
             qcanvas.height = parseInt(qcanvas.height / 2);
         }
 
-        
+
         self.LoadQuiue(0);
     }
 }
