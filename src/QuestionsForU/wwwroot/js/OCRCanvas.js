@@ -143,4 +143,45 @@ function OCRCanvas(rawData) {
 
         return lines;
     }
+
+    var distences = new Array();
+    OCRCanvas.prototype.Narrow = function() {
+        distences.push(_intData);
+        DistenceMap(0);
+        /*
+        console.log(distences.length);
+        for (i = 0; i < distences.length; i++) {
+            console.log(distences[i]);
+        }
+        */
+
+        DistencePlot(distences.length);
+    }
+
+    function DistenceMap(i) {
+        var d = new Array();
+        var rd = distences[i];
+        var vsum = 0;
+        d.push(0);
+        for (c = 1; c < _width - 1; c++) {
+            var pos = c * _height;
+            var v2 = rd[c - 1] & rd[c] & rd[c + 1];
+            var v1 = v2 >> 1;
+            var v3 = v2 << 1;
+            var v = v2 & v1 & v3;
+            d.push(v);
+            vsum = vsum | v;
+        }
+        d.push(0);
+
+        distences.push(d);
+        i = i + 1;
+        if (vsum > 0) {
+            DistenceMap(i);
+        }
+    }
+
+    function DistencePlot(i) {
+        i = i - 1;
+    }
 }

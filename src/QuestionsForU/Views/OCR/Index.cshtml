@@ -26,6 +26,8 @@
             <div>
                 <button ng-click="ctl.LoadQuiue(-1)"> << </button>
                 <button ng-click="ctl.LoadQuiue(1)"> >> </button>
+                <button ng-click="ctl.ZoomQueue(true)"> + </button>
+                <button ng-click="ctl.ZoomQueue(false)"> - </button>
             </div>
             <div style="overflow:auto">
             <canvas id="ocrCanvas" width="600" height="424">
@@ -35,4 +37,13 @@
         </div>
     </div>
     <div class="col-lg-2"></div>
+        <p>Queue: 
+            <br />Height - {{ctl.qheight}}
+            <br/> Lenght - {{ctl.qwidth}}
+        </p>
+        <div style="overflow:auto;max-height:420px;">
+            <div id="queue" ng-repeat="item in ctl.ints track by $index"  >
+                [{{$index + 1}}] {{item}}
+            </div>
+        </div>
     </div>
