@@ -273,6 +273,7 @@ function OCRCanvas(rawData) {
             //d[c] = d[c] | distences[distences.length - 1][c];
         }
 
+<<<<<<< HEAD
         */
 
         /*
