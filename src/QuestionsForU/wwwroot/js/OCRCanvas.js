@@ -13,6 +13,10 @@ function OCRCanvas(rawData) {
         BYTE_WHITE = 255,
         BYTE_BLACK = 0;
 
+    var m = Math.pow(2, 31) - 1,
+        vsum = 0,
+        ERROR_LENGTH;
+
     function Init(rawData) {
         _height = rawData.height;
         _width = rawData.width;
@@ -146,8 +150,6 @@ function OCRCanvas(rawData) {
         return lines;
     }
 
-
-
     OCRCanvas.prototype.Narrow = function(d) {
         distences = new Array();
         distences.push(_intData);
@@ -163,7 +165,7 @@ function OCRCanvas(rawData) {
     }
 
     function DistenceMap(i) {
-        var m = Math.pow(2, 31) - 1;
+
         var d = new Array();
         //var o = new Array();
         var rd = distences[i];
@@ -193,139 +195,153 @@ function OCRCanvas(rawData) {
             // distences 2d array of distences
             // distences[i] -> d
 
-            // Finding d(1) - (d(2) + s(1)) , s(1): 1 bit covering d(2) 
-            var o = angular.copy(d);
-            for (c = 1; c < _width - 1; c++) {
-                var c1 = o[c - 1];
-                var c2 = o[c];
-                var c3 = o[c + 1];
+            d = Normalise(d, rd);
+            d = Normalise2(d, rd);
+            d = Normalise3(d, rd);
 
-                var v11 = c1 >> 1;
-                var v12 = c1;
-                var v13 = c1 << 1;
+            distences[i] = d;
+        }
+    }
 
-                var v21 = c2 >> 1;
-                var v22 = c2;
-                var v23 = c2 << 1;
+    function Normalise(d, rd) {
+        // Finding d(1) - (d(2) + s(1)) , s(1): 1 bit covering d(2) 
+        var o = angular.copy(d);
+        for (c = 1; c < _width - 1; c++) {
+            var c1 = o[c - 1];
+            var c2 = o[c];
+            var c3 = o[c + 1];
 
-                var v31 = c3 >> 1;
-                var v32 = c3;
-                var v33 = c3 << 1;
+            var v11 = c1 >> 1;
+            var v12 = c1;
+            var v13 = c1 << 1;
 
-                var v = v11 | v12 | v13 | v21 | v23 | v31 | v32 | v33;
-                v = (m - v) & rd[c];
+            var v21 = c2 >> 1;
+            var v22 = c2;
+            var v23 = c2 << 1;
 
-                d[c] = v | d[c];
-            }
+            var v31 = c3 >> 1;
+            var v32 = c3;
+            var v33 = c3 << 1;
 
-            o = angular.copy(d);
-            // Finding N-S / W-E / NW-SE / NE-SW gap
-            for (c = 1; c < _width - 1; c++) {
-                var c1 = o[c - 1];
-                var c2 = o[c];
-                var c3 = o[c + 1];
+            var v = v11 | v12 | v13 | v21 | v23 | v31 | v32 | v33;
+            v = (m - v) & rd[c];
 
-                var v11 = c1 >> 1;
-                var v12 = c1;
-                var v13 = c1 << 1;
-
-                var v21 = c2 >> 1;
-                var v22 = c2;
-                var v23 = c2 << 1;
-
-                var v31 = c3 >> 1;
-                var v32 = c3;
-                var v33 = c3 << 1;
-
-                // W-E
-                var v = v12 & v32 & rd[c];
-
-                // N-S
-                v = (v21 & v23 & rd[c]) | v;
-
-                //NW-SE
-                v = (v11 & v33 & rd[c]) | v;
-
-                //NE-SW
-                v = (v13 & v31 & rd[c]) | v;
-
-                d[c] = v | d[c];
-            }
+            d[c] = v | d[c];
         }
 
+        return d;
+    }
 
+    function Normalise2(d, rd) {
+        var o = angular.copy(d);
+        // Finding N-S / W-E / NW-SE / NE-SW gap
+        for (c = 1; c < _width - 1; c++) {
+            var c1 = o[c - 1];
+            var c2 = o[c];
+            var c3 = o[c + 1];
 
-        /*
-        // d's Complement
-        for (c = 1; c < d.length; c++) {
-            d[c] = m - d[c];
-            d[c] = (d[c] & rd[c]);
+            var v11 = c1 >> 1;
+            var v12 = c1;
+            var v13 = c1 << 1;
 
-            d1 = (m - (d[c] & (o[c - 1] | o[c + 1]))) & d[c];
-            d2 = (m - (d[c] & (o[c - 1] >> 1) | (o[c + 1] << 1))) & d[c];
-            d3 = (m - (d[c] & (o[c] >> 1) | (o[c] << 1))) & d[c];
-            d4 = (m - (d[c] & (o[c - 1] << 1) | (o[c + 1] >> 1))) & d[c];
+            var v21 = c2 >> 1;
+            var v22 = c2;
+            var v23 = c2 << 1;
 
-            //o[c] = (m - (d[c] & o[c + 1]));
+            var v31 = c3 >> 1;
+            var v32 = c3;
+            var v33 = c3 << 1;
 
-            //d[c] = (d[c] & d1 & d2 & d3 & d4);
-            d[c] = (d[c] & d1);
-            //d[c] = d[c] | distences[distences.length - 1][c];
+            // -----N-----
+            // | 11 21 31 | 
+            // W 12 22 32 E
+            // | 13 23 33 |
+            // -----S-----
+
+            // W-E
+            var v = v12 & v32 & rd[c];
+
+            // N-S
+            v = (v21 & v23 & rd[c]) | v;
+
+            //NW-SE
+            v = (v11 & v33 & rd[c]) | v;
+
+            //NE-SW
+            v = (v13 & v31 & rd[c]) | v;
+
+            d[c] = v | d[c];
+        }
+        return d;
+    }
+
+    function Normalise3(d, rd) {
+
+        //for (i = 0; i < 4; i++) {
+
+        //}
+
+        var osum = 0;
+        vsum = 1;
+        var i = 1;
+        while (osum < vsum) {
+            osum = vsum;
+            d = Normalise4(d, rd);
+            i++;
+
         }
 
-<<<<<<< HEAD
-        */
+        ERROR_LENGTH = i;
+        console.log(vsum);
+        console.log(ERROR_LENGTH);
+        return d;
+    }
 
-        /*
+    function Normalise4(d, rd) {
+        var o = angular.copy(d);
+        //o = d;
+        vsum = 0;
+        // Finding //W-NW-N
+        for (c = 1; c < _width - 1; c++) {
+            var c1 = o[c - 1];
+            var c2 = o[c];
+            var c3 = o[c + 1];
 
-                for (c = 1; c < d.length; c++) {
-                    var result = 0;
-                    var v = rd[c];
-                    var v1 = d[c - 1];
-                    var v2 = d[c];
-                    var v3 = d[c + 1];
-                    for (r = 1; r < _height - 1; r++) {
-                        var r1 = v1 & Math.pow(2, (r - 1));
-                        var r2 = v1 & Math.pow(2, r);
-                        var r3 = v1 & Math.pow(2, (r + 1));
+            var v11 = c1 >> 1;
+            var v12 = c1;
+            var v13 = c1 << 1;
 
+            var v21 = c2 >> 1;
+            var v22 = c2;
+            var v23 = c2 << 1;
 
-                        var r4 = v2 & Math.pow(2, (r - 1));
-                        var r6 = v2 & Math.pow(2, (r + 1));
+            var v31 = c3 >> 1;
+            var v32 = c3;
+            var v33 = c3 << 1;
 
-                        var r7 = v3 & Math.pow(2, (r - 1));
-                        var r8 = v3 & Math.pow(2, r);
-                        var r9 = v3 & Math.pow(2, (r + 1));
+            // -----N-----
+            // | 11 21 31 | 
+            // W 12 22 32 E
+            // | 13 23 33 |
+            // -----S-----
 
-                        var b = v & Math.pow(2, r);
-                        if ((r1 | r2 | r3 | r4 | r6 | r7 | r8 | r9) == 0 && b == 1) {
-                            result = result + 1;
-                        }
-                        result = result << 1;
-                    }
+            //W-NW-N
+            v = (v12 & v11 & v21 & rd[c]);
 
+            //N-NE-E
+            v = (v21 & v31 & v32 & rd[c]);
 
-                    d[c] = (v2 & result) //| distences[distences.length - 1][c];;
+            //E-ES-S
+            v = (v32 & v33 & v23 & rd[c]);
 
+            //S-SW-W
+            v = (v23 & v13 & v12 & rd[c]);
 
-                    //d[c] = ((m - v1) & v2 & (m - v3)) //| distences[distences.length - 1][c];
-                    //d[c] = m-v2 //| distences[distences.length - 1][c];
+            d[c] = v | d[c];
 
-
-                    //d[c] = m - ((m - (v1 >> 1)) & v2) & (d[c]);
-                    //d[c] = ((m - (v1 << 1)) & v2) & (m - d[c]);
-                    //d[c] = ((m - (v3 >> 1)) & v2) & (m - d[c]);
-                    //d[c] = ((m - (v3 << 1)) & v2) & (m - d[c]);
-                    //d[c] = !v2 & distences[distences.length - 1][c];
-                    //v2 = !((v1 << 1) | v2);
-                    //d[c] = !v2 & distences[distences.length - 1][c];
-                    v2 = ((v3 << 1) | v2);
-                    //d[c] = v2 || distences[distences.length - 1][c];
-                    v2 = ((v3 << 1) | v2);
-                    //d[c] = v2// | distences[distences.length - 1][c];
-                    
-            }
-        */
+            vsum = vsum + d[c];
+        }
+        return d;
     }
 
     function DistencePlot(d) {
