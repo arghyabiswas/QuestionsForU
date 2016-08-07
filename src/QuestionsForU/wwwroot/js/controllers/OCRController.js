@@ -122,8 +122,13 @@ function OCRController($scope, service) {
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
         var qocr = new OCRCanvas(qdata);
 
+                qcontext.putImageData(qocr.data, 0, 0);
+                self.ints = qocr.ints;
+                self.qheight = qcanvas.height;
+                self.qwidth = qcanvas.width;
+
         //console.log(service.Name);
-        service.$post(qocr.ints);
+        //service.$post(qocr.ints);
 
     }
 
