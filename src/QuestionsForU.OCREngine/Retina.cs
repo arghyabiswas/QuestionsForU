@@ -5,73 +5,58 @@ using System.Threading.Tasks;
 
 namespace QuestionsForU.OCREngine
 {
-    public class Retina{
-        public int[] Input { get; set; }
-
-        public int[] Output { get; set; }
-
-		protected ComplexF[] data = null;
-		public ComplexF[] Data
-		{
-			get { return data; }
-		}
-
-		protected bool frequencySpace = false;
-		public bool FrequencySpace
-		{
-			get { return frequencySpace; }
-			set { frequencySpace = value; }
-		}
-
-		public int Width
-		{
-			get { return Input.Length; }
-		}
-		public int Height
-		{
-			get { return 32; }
-		}
+    public class Retina : ConeCell
+	{
 
 		public async Task<int[]> Recognise(){
-			//await Task.Run(()=>
-			//              Output = Input);
-			Output = Input;
-			//ToComplexFArray();
-			//ForwardFFT();
-			//ToIntArray();
-			//await
-
+			await Task.Run(() => {
+				ToComplexFArray();
+				ForwardFFT();
+				ToIntArray();
+			});
+			
 			return Output;
 		}
 
 		private void ToComplexFArray()
 		{
+			this.Width = (int) Math.Pow( 2, Math.Ceiling( Math.Log( Input.Length, 2 ) ) );
+
 			data = new ComplexF[this.Width * this.Height];
-			for (int i = 0; i < this.Width * this.Height; i++)
-			{
-				var pos = i % this.Width;
-				if (((Input[pos] << 1) & 1) == 0)
-				{
-					data[i].Re = ((float)(255));
+			for(int r=0;r<this.Width;r++){
+				int d = 0;
+				if(r < this.Input.Length){
+					d  = Input[r];
 				}
-				else {
-					data[i].Re = ((float)(0));
+				for(int c=0;c<this.Height;c++){
+					var i = r * this.Height + c;
+					if((d & 1) == 1){
+						data[i].Re = ((float)(0));
+					}
+					else{
+						data[i].Re = ((float)(255));
+					}
+					d = d >> 1;
 				}
 			}
 		}
 
 		private void ToIntArray()
 		{
-			for (int i = 0; i < this.Width * this.Height; i++)
-			{
-				var pos = i % this.Width;
-				int c = Math.Min(255, Math.Max(0, (int)(256 * data[i].GetModulus())));
-				c = c / 255;
-
-				Output[pos] = Output[pos] | c;
-				Output[pos] = Output[pos] >> 1;
+			this.Output = new int[this.Width];
+			for(int r=0;r<this.Width;r++){
+				var d = 0;
+				for(int c=0;c<this.Height;c++){
+					var i = r * this.Height + c;
+					int v = Math.Min(255, Math.Max(0, (int)(256 * data[i].GetModulus())));
+					v = v / 255;
+					d = d + v * ((int)Math.Pow(c, 2.0));
+					
+				}
+				this.Output[r] = d;
 			}
 		}
+
 		private void ForwardFFT()
 		{
 			float scale = 1f / (float)Math.Sqrt(this.Width * this.Height);
@@ -90,8 +75,6 @@ namespace QuestionsForU.OCREngine
 			}
 
 			Fourier.FFT2(data, this.Width, this.Height, FourierDirection.Forward);
-
-			this.FrequencySpace = true;
 
 			for (int i = 0; i < data.Length; i++)
 			{
@@ -120,8 +103,6 @@ namespace QuestionsForU.OCREngine
 					offset++;
 				}
 			}
-
-			this.FrequencySpace = false;
 
 			for (int i = 0; i < data.Length; i++)
 			{
@@ -168,7 +149,6 @@ namespace QuestionsForU.OCREngine
 							Math.Sqrt((array1.Length * sum_xpow2 - Ex2) * (array1.Length * sum_ypow2 - Ey2));
  
 			return Correl;
-//Console.WriteLine("CORREL : "+ Correl);
 		}
 
     }

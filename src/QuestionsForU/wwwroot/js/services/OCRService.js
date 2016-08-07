@@ -1,6 +1,7 @@
 function OCRServices($http) {
     var self = this,
-        Name = null;
+        Name = null,
+        ints = null;
 
     this.$get = function() {
         $http({
@@ -28,7 +29,8 @@ function OCRServices($http) {
         }).then(function successCallback(response) {
             // this callback will be called asynchronously
             // when the response is available
-            console.log(response.data)
+            self.ints = response.data;
+
         }, function errorCallback(response) {
             // called asynchronously if an error occurs
             // or server returns response with an error status.

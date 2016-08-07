@@ -164,6 +164,29 @@ function OCRCanvas(rawData) {
         DistencePlot(d);
     }
 
+    OCRCanvas.prototype.PlotCanvas = function(ints) {
+        OCRCanvas.prototype.ints = ints;
+        for (i = 0, n = _data.data.length; i < n; i = i + 4) {
+            var pos = parseInt(i % (_width * 4)) / 4;
+            var h = parseInt(i / (_width * 4));
+            var pixel = BYTE_WHITE;
+            var v = ints[pos];
+            var b = Math.pow(2, (_height - h));
+            if ((v & b) == 0) {
+                pixel = BYTE_WHITE;
+            } else {
+                pixel = BYTE_BLACK;
+            }
+
+            _data.data[i] = pixel;
+            _data.data[i + 1] = pixel;
+            _data.data[i + 2] = pixel;
+            //_data.data[i+3] = pixel;
+
+        }
+
+    }
+
     function DistenceMap(i) {
 
         var d = new Array();

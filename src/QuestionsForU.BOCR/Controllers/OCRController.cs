@@ -15,7 +15,11 @@ namespace QuestionsForU.BOCR.Controllers
         [HttpGet]
         public async Task<IEnumerable<string>> Get(CancellationToken cancellationToken)
         {
-            return new string[] { "Bengali OCR", "V1.0" };
+            string[] result=null;
+            await Task.Run(() => {
+				result = new string[] { "Bengali OCR", "V1.0" };
+            });
+            return result;
         }
 
 

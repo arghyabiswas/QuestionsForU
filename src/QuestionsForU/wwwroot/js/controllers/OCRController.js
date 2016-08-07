@@ -17,6 +17,30 @@ function OCRController($scope, service) {
 
     Init();
 
+    $scope.$watch(function() {
+            return service.ints;
+        },
+        function() {
+
+            if (service.ints != null && service.ints.length > 0) {
+
+                //qocr.Narrow(2);
+                //qcontext.setTransform(1, 0, 0, 1, 0, 0); // RESET 
+                //qcontext.putImageData(qocr.data, 0, 0);
+                //console.log(qocr.ints); 
+                console.log(service.ints);
+
+                var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
+                var qocr = new OCRCanvas(qdata);
+
+                qocr.PlotCanvas(service.ints);
+                qcontext.putImageData(qocr.data, 0, 0);
+                self.ints = qocr.ints;
+                self.qheight = qcanvas.height;
+                self.qwidth = qcanvas.width;
+            }
+        });
+
     function Init() {
         canvas = $("#ocrCanvas")[0];
         context = canvas.getContext("2d");
@@ -94,19 +118,13 @@ function OCRController($scope, service) {
         qcontext.drawImage(selectedImage, 0, l);
 
         qcontext.save();
+
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
         var qocr = new OCRCanvas(qdata);
-        //qocr.Narrow(2);
-        //qcontext.setTransform(1, 0, 0, 1, 0, 0); // RESET 
-        qcontext.putImageData(qocr.data, 0, 0);
-        //console.log(qocr.ints); 
 
-        var ocr = new OCR(qocr.ints);
         //console.log(service.Name);
         service.$post(qocr.ints);
-        self.ints = qocr.ints;
-        self.qheight = qcanvas.height;
-        self.qwidth = qcanvas.width;
+
     }
 
     self.ZoomQueue = function(increase) {
