@@ -18,7 +18,7 @@ function OCR(rawData) {
     var core_queue = new Array(_self._width);
     var result_queue = new Array(_self._width);
 
-    Start = function() {
+    function Start() {
         for (i = 0; i < _self._width; i++) {
             core_queue.push(0);
             result_queue.push(0);
