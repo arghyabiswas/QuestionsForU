@@ -5,21 +5,17 @@ function OCR(rawData) {
         _data = null;
 
     function Init(data) {
-        _self._data = data;
+        _data = data;
         Start();
     }
 
-    Init(rawData);
 
-    OCR.prototype.data = _data;
-    OCR.prototype.height = _height;
-    OCR.prototype.width = _width;
 
-    var core_queue = new Array(_self._width);
-    var result_queue = new Array(_self._width);
+    var core_queue = new Array(_width);
+    var result_queue = new Array(_width);
 
     function Start() {
-        for (i = 0; i < _self._width; i++) {
+        for (i = 0; i < _width; i++) {
             core_queue.push(0);
             result_queue.push(0);
         }
@@ -30,13 +26,13 @@ function OCR(rawData) {
     };
 
 
-    Enqueue = function(item) {
+    function Enqueue(item) {
         core_queue.push(item);
         ProcessDistence();
         core_queue.shift();
     };
 
-    ProcessDistence = function() {
+    function ProcessDistence() {
         for (pos = 0; pos < _width - 2; pos++) {
             if (core_queue[pos] == 0) {
 
@@ -46,4 +42,10 @@ function OCR(rawData) {
             }
         }
     };
+
+    Init(rawData);
+
+    OCR.prototype.data = _data;
+    OCR.prototype.height = _height;
+    OCR.prototype.width = _width;
 }

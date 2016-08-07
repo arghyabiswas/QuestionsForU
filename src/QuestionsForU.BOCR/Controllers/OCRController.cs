@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QuestionsForU.OCREngine;
+using  System.Threading;
 
 namespace QuestionsForU.BOCR.Controllers
 {
@@ -12,7 +13,7 @@ namespace QuestionsForU.BOCR.Controllers
     {
         // GET api/values
         [HttpGet]
-        public async Task<IEnumerable<string>> Get()
+        public async Task<IEnumerable<string>> Get(CancellationToken cancellationToken)
         {
             return new string[] { "Bengali OCR", "V1.0" };
         }
@@ -20,12 +21,11 @@ namespace QuestionsForU.BOCR.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task<IEnumerable<int>> Post([FromBody]int[] value)
+        public async Task<int[]> Post([FromBody]int[] value,CancellationToken cancellationToken)
         {
             var eye = new Retina();
             eye.Input = value;
-            eye.Narrow();
-            return eye.Output;
+            return await eye.Recognise();
         }
     }
 }
