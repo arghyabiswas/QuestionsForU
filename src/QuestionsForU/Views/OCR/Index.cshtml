@@ -18,10 +18,12 @@
          <p>Image Canvas:</p>
          <div>
              <div style="overflow:auto;min-height:50px;max-width:600px;">
-                <canvas id="ocrQueue" width="600" height="32">
+                <canvas id="ocrQueue" width="600" height="32" style="border:1px solid #000;">
                 Your browser does not support the HTML5 canvas tag.
                 </canvas>
-               
+                <canvas id="fftQueue" width="600" height="32" style="border:1px solid #000;">
+                Your browser does not support the HTML5 canvas tag.
+                </canvas>
             </div>
             <div>
                 <button ng-click="ctl.LoadQuiue(-1)"> << </button>

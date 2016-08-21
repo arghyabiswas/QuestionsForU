@@ -4,6 +4,8 @@ function OCRController($scope, service) {
         context = null,
         qcanvas = null,
         qcontext = null,
+        fcanvas = null,
+        fcontext = null,
         vscale = 1,
         hscale = 1,
         scale = 1,
@@ -30,14 +32,15 @@ function OCRController($scope, service) {
                 //console.log(qocr.ints); 
                 console.log(service.ints);
 
-                var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
+                fcontext.clearRect(0, 0, fcanvas.width, fcanvas.height);
+                var qdata = qcontext.getImageData(0, 0, fcanvas.width, fcanvas.height);
                 var qocr = new OCRCanvas(qdata);
 
                 qocr.PlotCanvas(service.ints);
-                qcontext.putImageData(qocr.data, 0, 0);
+                fcontext.putImageData(qocr.data, 0, 0);
                 self.ints = qocr.ints;
-                self.qheight = qcanvas.height;
-                self.qwidth = qcanvas.width;
+                self.qheight = fcanvas.height;
+                self.qwidth = fcanvas.width;
             }
         });
 
@@ -48,6 +51,9 @@ function OCRController($scope, service) {
 
         qcanvas = $("#ocrQueue")[0];
         qcontext = qcanvas.getContext("2d");
+
+        fcanvas = $("#fftQueue")[0];
+        fcontext = fcanvas.getContext("2d");
     }
 
     self.LoadCanvas = function(img) {
@@ -122,13 +128,13 @@ function OCRController($scope, service) {
         var qdata = qcontext.getImageData(0, 0, qcanvas.width, qcanvas.height);
         var qocr = new OCRCanvas(qdata);
 
-                qcontext.putImageData(qocr.data, 0, 0);
-                self.ints = qocr.ints;
-                self.qheight = qcanvas.height;
-                self.qwidth = qcanvas.width;
+        qcontext.putImageData(qocr.data, 0, 0);
+        self.ints = qocr.ints;
+        self.qheight = qcanvas.height;
+        self.qwidth = qcanvas.width;
 
         //console.log(service.Name);
-        //service.$post(qocr.ints);
+        service.$post(qocr.ints);
 
     }
 

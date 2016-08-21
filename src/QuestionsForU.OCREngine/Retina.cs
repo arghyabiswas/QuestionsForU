@@ -10,18 +10,22 @@ namespace QuestionsForU.OCREngine
 
 		public async Task<int[]> Recognise(){
 			await Task.Run(() => {
+				EstimateEntity();
 				ToComplexFArray();
-				ForwardFFT();
+				GenerateSignal();
 				ToIntArray();
 			});
 			
 			return Output;
 		}
 
-		private void ToComplexFArray()
+		private void EstimateEntity()
 		{
 			this.Width = (int) Math.Pow( 2, Math.Ceiling( Math.Log( Input.Length, 2 ) ) );
+		}
 
+		private void ToComplexFArray()
+		{
 			data = new ComplexF[this.Width * this.Height];
 			for(int r=0;r<this.Width;r++){
 				int d = 0;
@@ -48,8 +52,8 @@ namespace QuestionsForU.OCREngine
 				var d = 0;
 				for(int c=0;c<this.Height;c++){
 					var i = r * this.Height + c;
-					int v = Math.Min(255, Math.Max(0, (int)(256 * data[i].GetModulus())));
-					v = v / 255;
+					int v = Math.Min(64, Math.Max(0, (int)(63 * data[i].GetModulus())));
+					v = v / 63;
 					d = d + v * ((int)Math.Pow(c, 2.0));
 					
 				}
@@ -57,14 +61,21 @@ namespace QuestionsForU.OCREngine
 			}
 		}
 
-		private void ForwardFFT()
+		private void GenerateSignal()
 		{
-			float scale = 1f / (float)Math.Sqrt(this.Width * this.Height);
+			for(int i=0;i<this.Width/this.SAMPLE_SIZE;i++){
+				ForwardFFT(i);
+			}
+		}
 
-			int offset = 0;
-			for (int y = 0; y < this.Height; y++)
+		private void ForwardFFT(int period)
+		{
+			float scale = 1f;// 1f/this.SAMPLE_SIZE;// 1f / (float)Math.Sqrt(this.SAMPLE_SIZE * this.SAMPLE_SIZE);
+
+			int offset = period*this.SAMPLE_SIZE;
+			for (int y = 0; y < this.SAMPLE_SIZE; y++)
 			{
-				for (int x = 0; x < this.Width; x++)
+				for (int x = (period*this.SAMPLE_SIZE); x < ((period + 1)* this.SAMPLE_SIZE); x++)
 				{
 					if (((x + y) & 0x1) != 0)
 					{
@@ -74,8 +85,9 @@ namespace QuestionsForU.OCREngine
 				}
 			}
 
-			Fourier.FFT2(data, this.Width, this.Height, FourierDirection.Forward);
+			Fourier.FFT2(data, this.SAMPLE_SIZE, this.SAMPLE_SIZE, FourierDirection.Forward);
 
+			// May not be required
 			for (int i = 0; i < data.Length; i++)
 			{
 				data[i] *= scale;

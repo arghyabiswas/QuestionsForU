@@ -2,8 +2,8 @@ using Exocortex.DSP;
 
 public class ConeCell{
 
-        public int[] Input { get; set; }
-        public int[] Output { get; set; }
+        public int[] Input { protected get; set; }
+        public int[] Output { get; protected set; }
 
         protected ComplexF[] data = null;
 		public ComplexF[] Data
@@ -27,4 +27,7 @@ public class ConeCell{
 		{
 			get { return 32; }
 		}
+
+		public int SAMPLE_SIZE = 32;
+		public ComplexF[] temp = null; 
 }
